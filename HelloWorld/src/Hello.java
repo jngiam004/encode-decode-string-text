@@ -1,25 +1,61 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
+// Any character not in the reference table will mapped back to the same character
+// that includes whitespace character
+
 public class Hello {
+	
+	static Character[] referenceTableArray = new Character[44];//declaration 
+	static Character[] reshuffleTableArray = new Character[44];//declaration 
+	static Character[] decodedTableArray = new Character[44];//declaration 
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		int choice = 1;
 		while(choice == 1)
 		{
-		String originalStr = "HELLO WORLD";
-		Scanner scanner = new Scanner(System.in);
-	    System.out.print("Enter a character: ");
-	    char c = scanner.next().charAt(0);
-	    System.out.println("You have entered: "+ c);
-		// offset character is the key
-		int offsetChar = 0;
-		char prependChar = c;
-		// Create and instantiate a new object
-		Hello example = new Hello();
-		
-		char[] referenceTableArray = new char[44];//declaration 
-		char[] reshuffleTableArray = new char[44];//declaration 
+			//String plainText = "HELLO WORLD";
+			//String plainText = "ABC9&";
+			String plainText = "H#LLO WORLD";
+			
+			Scanner scanner = new Scanner(System.in);
+		    System.out.print("Enter a character: ");
+		    char prependChar = scanner.next().trim().charAt(0);
+		    
+		    System.out.println("You have entered: "+ prependChar);
+		    System.out.println();
+		    
+			System.out.printf("%-25s%s%n", "Original Plaintext: ", " " + plainText);
+			plainText = prependChar + plainText;
+			
+			// Populate Reference Table
+			constructReferenceTableArray();
+			
+			// Process the input
+			String encodedText = encode(plainText);
+			String decodedText = decode(encodedText);
+			
+			// Display output
+			System.out.printf("%-25s%s%n", "Encoded String: ", encodedText);
+			System.out.printf("%-25s%s%n", "Decoded String: ", decodedText);
+			System.out.println();
+			System.out.println("Would you like to continue?");
+			System.out.println("1) Press 1 for Yes");
+			System.out.println("2) Press 0 for No");
+			choice = scanner.nextInt();
+			
+			System.out.println("=================================================================");
+			if (choice == 0)
+			{
+				System.out.println("\nProgram Exited");
+			}
+		}
+	}
+	
+	public static void constructReferenceTableArray() {
 		//initialization (All unique characters)
 		referenceTableArray[0]='A';
 		referenceTableArray[1]='B';  
@@ -65,100 +101,129 @@ public class Hello {
 		referenceTableArray[41]='-'; 
 		referenceTableArray[42]='.'; 
 		referenceTableArray[43]='/'; 
-		
-		
-		String format1 = "%-25s%s%n";
-		String format2 = "%-25s%c%s%n";
-		System.out.printf(format1, "Original Plaintext : ", originalStr);
-		
-		// Process the input
-		String encodedStr = example.encode(originalStr, referenceTableArray, reshuffleTableArray, offsetChar, prependChar);
-		String decodedStr = example.decode(encodedStr, referenceTableArray, reshuffleTableArray);
-		
-		// Display output
-		System.out.printf(format2, "Encoded String : ", prependChar, encodedStr);
-		System.out.printf(format1, "Decoded String : ", decodedStr);
-		System.out.println();
-		System.out.println("Would you like to continue?");
-		System.out.println("Press 1 for Yes");
-		System.out.println("Press 0 for No");
-		choice = scanner.nextInt();
-		System.out.println("=================================================================");
-		if (choice == 0)
-		{
-			System.out.println("\nProgram Exited");
-		}
-		}
 	}
+	
 	// Convert plaintext to obfuscated string (encrypted message)
-	public static String encode (String plainText, char[] referenceTableArray, char[] reshuffleTableArray, int offsetChar, char prependChar) {
-		char[] chars = plainText.toCharArray();
-		System.out.print("referenceTableArray: ");
+	public static String encode (String plainText) {
+		//System.out.println(plainText);
+		int offsetChar = 0;						// offset character is the key
+		char[] chars = plainText.toCharArray(); // Convert string to array of characters
+		
+		// Get the index of the offset character
 		for (int i = 0; i < referenceTableArray.length; i++) {
-			System.out.print(referenceTableArray[i]);
-			if (referenceTableArray[i] == prependChar)
+			// When the offset character matches the character in reference table, get the offset number
+			if (referenceTableArray[i] == chars[0])
 			{
 				offsetChar = i;
+				break;
 			}
 		}
 		
+		// Partially insert characters based on the offset distance
 		int newindex = 0;
 		for (int j = referenceTableArray.length-offsetChar; j < referenceTableArray.length; j++) {
 			reshuffleTableArray[newindex] = referenceTableArray[j];
+			//System.out.println(reshuffleTableArray[newindex]);
 			newindex++;
 		}
-		System.out.println();	
+		
+		// Fully insert characters based on the remaining slots left off from the previous index
 		for (int k = 0; k < referenceTableArray.length-offsetChar; k++) {
 			reshuffleTableArray[newindex] = referenceTableArray[k];
+			//System.out.println(reshuffleTableArray[newindex]);
 			newindex++;
 		}
-		System.out.print("reshuffleTableArray: ");
-		for (int i = 0; i < reshuffleTableArray.length; i++) {
-			System.out.print(reshuffleTableArray[i]);
-		}
-		System.out.println();	
-		String encoded = "";
-			for(char c: chars) {
-				if (c == ' ')
-				{
-					encoded += ' ';
-				}
-				else 
-				{
-					for (int l = 0; l < referenceTableArray.length; l ++) {
-						if (c == referenceTableArray[l])
-						{
-							encoded += reshuffleTableArray[l];
-							break;
-						}
-					}
-				}	
-			}
 		
-		return new String(encoded);
-	}
-	// Convert obfuscated string to plaintext (decrypted message)
-	public static String decode (String encodedText, char[] referenceTableArray, char[] reshuffleTableArray) {
-		char[] chars = encodedText.toCharArray();
-		String decoded = "";
-	
-		for(char c: chars) {
-			if (c == ' ')
-			{
-				decoded += ' ';
-			}
-			else
-			{
-				for (int l = 0; l < reshuffleTableArray.length; l ++) {
-					if (c == reshuffleTableArray[l])
+		// Display Output
+		String encoded = Character.toString(chars[0]);
+		
+		List<Character> referenceTableList = new ArrayList<>(Arrays.asList(referenceTableArray));
+		
+		// currentChar start from index 1 to skip the first character
+		for(int currentChar = 1; currentChar < chars.length; currentChar++) {
+			//System.out.println("Index: " + currentChar + " " + " and currentChar: " + chars[currentChar]);
+			
+			for (int l = 0; l < referenceTableList.size(); l ++) {
+				if (referenceTableList.contains(chars[currentChar]))
+				{
+					if (chars[currentChar] == referenceTableList.get(l))
 					{
-						decoded += referenceTableArray[l];
+						encoded += reshuffleTableArray[l];
+						//System.out.println(referenceTableList.get(l) +" " + reshuffleTableArray[l]);
 						break;
 					}
 				}
+				else
+				{
+					encoded += chars[currentChar];
+					break;
+				}
 			}	
 		}
-		return new String(decoded);
+	return encoded;
 	}
-	
+	// Convert obfuscated string to plaintext (decrypted message)
+	public static String decode (String encodedText) {
+		int offsetChar = 0;						// offset character is the key
+		String newEncodedText = encodedText.substring(1);		// Get all characters after the first character
+		//System.out.println(encodedText.charAt(0));
+		//System.out.println("Encoded Text is: " + encodedText);
+		//System.out.println("Encoded Text without first char is: " + newEncodedText);
+		char[] chars = newEncodedText.toCharArray();
+		
+		// Get the index of the offset character
+		for (int i = 0; i < referenceTableArray.length; i++) {
+			// When the offset character matches the character in reference table, get the offset number
+			if (referenceTableArray[i] == encodedText.charAt(0))
+			{
+				offsetChar = i;
+				//System.out.println(offsetChar);
+				break;
+			}
+		}
+		int newIndex = offsetChar;
+		int remainingCounter = 0;
+		// Partially insert characters based on the offset distance
+		for (int j = 0; j < reshuffleTableArray.length; j++) {
+			if (j < reshuffleTableArray.length - offsetChar )
+			{
+				decodedTableArray[j] = reshuffleTableArray[newIndex];
+			}
+			else
+			{
+				remainingCounter = j;
+				break;
+			}
+			
+			if(newIndex != reshuffleTableArray.length - 1)
+				newIndex++;
+		}
+		
+		// Fully insert characters based on the remaining slots left off from the previous index
+		for (int k = 0; k < offsetChar; k++) {
+			decodedTableArray[remainingCounter] = reshuffleTableArray[k];
+			remainingCounter++;
+		}
+
+		String decoded = " ";
+		List<Character> decodedTableList = new ArrayList<>(Arrays.asList(decodedTableArray));
+		for(char currentChar: chars) {
+			for (int l = 0; l < decodedTableList.size(); l ++) {
+				if (decodedTableList.contains(currentChar))
+				{
+					if (currentChar == reshuffleTableArray[l])
+					{
+						decoded += decodedTableList.get(l);
+						break;
+					}
+				}
+				else
+				{
+					decoded += currentChar;
+					break;
+				}
+			}		
+		}
+		return decoded;
+	}
 }

@@ -119,8 +119,9 @@ public class Hello {
 			}
 		}
 		
-		// Partially insert characters based on the offset distance
 		int newindex = 0;
+		
+		// Partially insert characters based on the offset distance
 		for (int j = referenceTableArray.length-offsetChar; j < referenceTableArray.length; j++) {
 			reshuffleTableArray[newindex] = referenceTableArray[j];
 			newindex++;
@@ -132,9 +133,8 @@ public class Hello {
 			newindex++;
 		}
 		
-		// Display Output
+		// Populate encoded string
 		String encoded = Character.toString(chars[0]);
-		
 		List<Character> referenceTableList = new ArrayList<>(Arrays.asList(referenceTableArray));
 		
 		// currentChar start from index 1 to skip the first character
@@ -161,7 +161,7 @@ public class Hello {
 	public static String decode (String encodedText) {
 		int offsetChar = 0;						// offset character is the key
 		String newEncodedText = encodedText.substring(1);		// Get all characters after the first character
-		char[] chars = newEncodedText.toCharArray();
+		char[] chars = newEncodedText.toCharArray();			// Convert string to array of characters
 		
 		// Get the index of the offset character
 		for (int i = 0; i < referenceTableArray.length; i++) {
@@ -172,8 +172,10 @@ public class Hello {
 				break;
 			}
 		}
+		
 		int newIndex = offsetChar;
 		int remainingCounter = 0;
+		
 		// Partially insert characters based on the offset distance
 		for (int j = 0; j < reshuffleTableArray.length; j++) {
 			if (j < reshuffleTableArray.length - offsetChar )
@@ -196,8 +198,10 @@ public class Hello {
 			remainingCounter++;
 		}
 
+		// Populate decoded string
 		String decoded = " ";
 		List<Character> decodedTableList = new ArrayList<>(Arrays.asList(decodedTableArray));
+		
 		for(char currentChar: chars) {
 			for (int l = 0; l < decodedTableList.size(); l ++) {
 				if (decodedTableList.contains(currentChar))

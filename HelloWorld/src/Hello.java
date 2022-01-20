@@ -3,9 +3,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-// Any character not in the reference table will mapped back to the same character
-// that includes whitespace character
-
+/* 	
+ * Any character ('#', '$', etc...) not in the reference table will mapped back to the same character 
+ * including whitespace character (' ')
+*/
 public class Hello {
 	
 	static Character[] referenceTableArray = new Character[44];//declaration 
@@ -105,7 +106,6 @@ public class Hello {
 	
 	// Convert plaintext to obfuscated string (encrypted message)
 	public static String encode (String plainText) {
-		//System.out.println(plainText);
 		int offsetChar = 0;						// offset character is the key
 		char[] chars = plainText.toCharArray(); // Convert string to array of characters
 		
@@ -123,14 +123,12 @@ public class Hello {
 		int newindex = 0;
 		for (int j = referenceTableArray.length-offsetChar; j < referenceTableArray.length; j++) {
 			reshuffleTableArray[newindex] = referenceTableArray[j];
-			//System.out.println(reshuffleTableArray[newindex]);
 			newindex++;
 		}
 		
 		// Fully insert characters based on the remaining slots left off from the previous index
 		for (int k = 0; k < referenceTableArray.length-offsetChar; k++) {
 			reshuffleTableArray[newindex] = referenceTableArray[k];
-			//System.out.println(reshuffleTableArray[newindex]);
 			newindex++;
 		}
 		
@@ -141,15 +139,12 @@ public class Hello {
 		
 		// currentChar start from index 1 to skip the first character
 		for(int currentChar = 1; currentChar < chars.length; currentChar++) {
-			//System.out.println("Index: " + currentChar + " " + " and currentChar: " + chars[currentChar]);
-			
 			for (int l = 0; l < referenceTableList.size(); l ++) {
 				if (referenceTableList.contains(chars[currentChar]))
 				{
 					if (chars[currentChar] == referenceTableList.get(l))
 					{
 						encoded += reshuffleTableArray[l];
-						//System.out.println(referenceTableList.get(l) +" " + reshuffleTableArray[l]);
 						break;
 					}
 				}
@@ -166,9 +161,6 @@ public class Hello {
 	public static String decode (String encodedText) {
 		int offsetChar = 0;						// offset character is the key
 		String newEncodedText = encodedText.substring(1);		// Get all characters after the first character
-		//System.out.println(encodedText.charAt(0));
-		//System.out.println("Encoded Text is: " + encodedText);
-		//System.out.println("Encoded Text without first char is: " + newEncodedText);
 		char[] chars = newEncodedText.toCharArray();
 		
 		// Get the index of the offset character
@@ -177,7 +169,6 @@ public class Hello {
 			if (referenceTableArray[i] == encodedText.charAt(0))
 			{
 				offsetChar = i;
-				//System.out.println(offsetChar);
 				break;
 			}
 		}
